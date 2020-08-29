@@ -1,0 +1,21 @@
+dialog[open] {
+    animation: appear .15s cubic-bezier(0, 1.8, 1, 1.8);
+  }
+  
+    dialog::backdrop {
+      background: linear-gradient(45deg, rgba(0, 0, 0, 0.747), rgba(54, 54, 54, 0.877));
+      backdrop-filter: blur(10px);
+    }
+    
+   
+  @keyframes appear {
+    from {
+      opacity: 0;
+      transform: translateX(-3rem);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  } 
