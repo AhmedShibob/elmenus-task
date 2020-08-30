@@ -74,6 +74,15 @@ function App() {
         });
 
         break;
+      case "avatar":
+
+       
+        setErrors({
+          ...errors,
+          [name]: value.length < 3 ? "select the avatar please!" : "",
+        });
+
+        break;
       case "streetAddress":
         setErrors({
           ...errors,
@@ -113,7 +122,17 @@ function App() {
         break;
     }
 
+
     setForm({ ...form, [name]: value });
+
+    if(name === "avatar"){
+      const formData = new FormData()
+      console.log(e.target.files[0]);
+      formData.append(e.target.files[0].name, e.target.files[0])
+      console.log(formData);
+      setForm({ ...form, [name]: formData });
+      console.log(form);
+    }
   };
 
   const handleFinalSubmit = (e) => {
