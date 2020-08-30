@@ -7,6 +7,145 @@ function App() {
   const [loader, setLoader] = useState(true);
   const [pages, setPages] = useState({});
   const [page, setPage] = useState(1);
+  const [notification, setNotification] = useState(false);
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    job: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    streetAddress: "",
+  });
+
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    job: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    streetAddress: "",
+  });
+
+  const validEmailRegex = RegExp(
+    /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+  );
+
+  const strogPasswod = (password) => {
+    if (
+      password.match(/[a-z]/g) &&
+      password.match(/[A-Z]/g) &&
+      password.match(/[0-9]/g) &&
+      password.match(/[^a-zA-Z\d]/g) &&
+      password.length >= 8
+    ) {
+      return "true";
+    } else return "false";
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    switch (name) {
+      case "firstName":
+        setErrors({
+          ...errors,
+          [name]:
+            value.length < 3 ? "First Name must be 3 characters long!" : "",
+        });
+
+        break;
+      case "lastName":
+        setErrors({
+          ...errors,
+          [name]:
+            value.length < 3 ? "Last Name must be 3 characters long!" : "",
+        });
+
+        break;
+      case "job":
+        setErrors({
+          ...errors,
+          [name]: value.length < 3 ? "Job must be 3 characters long!" : "",
+        });
+
+        break;
+      case "streetAddress":
+        setErrors({
+          ...errors,
+          [name]:
+            value.length < 3 ? "Street Address must be 3 characters long!" : "",
+        });
+
+        break;
+      case "email":
+        setErrors({
+          ...errors,
+          [name]: validEmailRegex.test(value) ? "" : "Email is not valid!",
+        });
+
+        break;
+      case "password":
+        setErrors({
+          ...errors,
+          [name]:
+            strogPasswod(value) !== "true"
+              ? "Password must be 8 characters long!"
+              : "",
+        });
+
+        break;
+      case "confirmPassword":
+        setErrors({
+          ...errors,
+          [name]:
+            value !== document.getElementsByName("password")[0].value
+              ? "password and confirm password must match!"
+              : "",
+        });
+
+        break;
+      default:
+        break;
+    }
+
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleFinalSubmit = (e) => {
+    e.preventDefault();
+    console.log(form);
+    setLoader(true);
+    axios
+      .post("https://reqres.in/api/users", form)
+      .then((res) => {
+        console.log(res);
+        setLoader(false);
+
+        document.getElementById("myModal").close();
+        setForm({
+          firstName: "",
+          lastName: "",
+          avatar: "",
+          job: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          streetAddress: "",
+        });
+
+        setNotification(true);
+
+        setTimeout(() => {
+          setNotification(false);
+        }, 2000);
+      })
+      .catch((e) => console.log(e));
+  };
 
   const getUsersData = () => {
     const url = `https://reqres.in/api/users?page=${page}`;
@@ -240,103 +379,176 @@ function App() {
 
             {/* Modal Content*/}
             <div className="flex w-full h-auto py-10 px-2 justify-center items-center rounded text-center text-gray-500">
-              <div class="max-w-sm mx-auto px-6">
-                <div class="relative flex flex-wrap">
-                  <div class="w-full relative">
-                    <div class="md:mt-6">
-                      <form class="mt-8">
-                        <div class="mx-auto max-w-lg ">
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+              <div className="max-w-sm mx-auto px-6">
+                <div className="relative flex flex-wrap">
+                  <div className="w-full relative">
+                    <div className="md:mt-6">
+                      <form className="mt-8" onSubmit={handleFinalSubmit}>
+                        <div className="mx-auto max-w-lg ">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               First Name
                             </p>
                             <input
+                              required
+                              onChange={handleInputChange}
+                              name="firstName"
                               placeholder=""
                               type="text"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.firstName.length > 0 && (
+                              <span className="text-red-400">
+                                {errors.firstName}
+                              </span>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Last Name
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="lastName"
                               placeholder=""
                               type="text"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.lastName.length > 0 && (
+                              <span className="text-red-400">
+                                {errors.lastName}
+                              </span>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Avatar
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="avatar"
                               placeholder=""
                               type="file"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Job
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="job"
                               placeholder=""
                               type="text"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.job.length > 0 && (
+                              <span className="text-red-400">{errors.job}</span>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Street Address
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="streetAddress"
                               placeholder=""
                               type="text"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.streetAddress.length > 0 && (
+                              <span className="text-red-400">
+                                {errors.streetAddress}
+                              </span>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Email
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="email"
                               placeholder=""
                               type="email"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.email.length > 0 && (
+                              <span className="text-red-400">
+                                {errors.email}
+                              </span>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Password
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="password"
                               placeholder=""
                               type="password"
-                              class="text-md block px-3 py-2 rounded-lg w-full
-                bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
+                              className="text-md block px-3 py-2 rounded-lg w-full
+                bg-white border-2 borde
+                r-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.password.length > 0 && (
+                              <ul>
+                                <li className="text-red-400">
+                                  At least 1 uppercase character.
+                                </li>
+                                <li className="text-red-400">
+                                  At least 1 lowercase character.
+                                </li>
+                                <li className="text-red-400">
+                                  At least 1 digit.
+                                </li>
+                                <li className="text-red-400">
+                                  At least 1 special character.
+                                </li>
+                                <li className="text-red-400">
+                                  Minimum 8 characters.
+                                </li>
+                              </ul>
+                            )}
                           </div>
-                          <div class="py-1">
-                            <p class="px-1 text-sm text-gray-600 text-left">
+                          <div className="py-1">
+                            <p className="px-1 text-sm text-gray-600 text-left">
                               Password Confirm
                             </p>
                             <input
+                              onChange={handleInputChange}
+                              required
+                              name="confirmPassword"
                               placeholder=""
                               type="password"
-                              class="text-md block px-3 py-2 rounded-lg w-full
+                              className="text-md block px-3 py-2 rounded-lg w-full
                 bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none"
                             />
+                            {errors.confirmPassword.length > 0 && (
+                              <span className="text-red-400">
+                                {errors.confirmPassword}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <button
-                          class="mt-3 text-lg font-semibold
+                          type="submit"
+                          className="mt-3 text-lg font-semibold
             bg-gray-800 w-full text-white rounded-lg
             px-6 py-3 block shadow-xl hover:text-white hover:bg-black"
                         >
@@ -351,6 +563,36 @@ function App() {
             {/* End of Modal Content*/}
           </div>
         </dialog>
+
+        <div
+          className={
+            notification
+              ? "notification m-auto w-1/3 absolute top-2 right-2 block"
+              : "m-auto w-1/3 absolute top-2 right-2 hide"
+          }
+        >
+          <div className="bg-white rounded-lg border-gray-300 border p-3 shadow-lg">
+            <div className="flex flex-row">
+              <div className="px-2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 1792 1792"
+                  fill="#44C997"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M1299 813l-422 422q-19 19-45 19t-45-19l-294-294q-19-19-19-45t19-45l102-102q19-19 45-19t45 19l147 147 275-275q19-19 45-19t45 19l102 102q19 19 19 45t-19 45zm141 83q0-148-73-273t-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73 273-73 198-198 73-273zm224 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z" />
+                </svg>
+              </div>
+              <div className="ml-2 mr-6">
+                <span className="font-semibold">Successfully Added!</span>
+                <span className="block text-gray-500">
+                  User Successfully Added!
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

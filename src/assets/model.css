@@ -3,6 +3,7 @@ dialog[open] {
   }
   
     dialog::backdrop {
+        
       background: linear-gradient(45deg, rgba(0, 0, 0, 0.747), rgba(54, 54, 54, 0.877));
       backdrop-filter: blur(10px);
     }
@@ -19,3 +20,47 @@ dialog[open] {
       transform: translateX(0);
     }
   } 
+  @keyframes hide {
+    from {
+        
+      opacity: 1;
+      transform: translateX(-3rem);
+    }
+  
+    to {
+      display: none;
+      opacity: 0;
+      transform: translateX(0);
+    }
+  } 
+
+
+  .z-50 {
+     z-index:  500;
+  }
+
+  .top-2 {
+    top: 2rem;
+   
+    
+  } 
+  
+  .right-2 {
+      right: 2rem;
+  }
+
+  .notification {
+    animation: appear .15s cubic-bezier(0, 1.8, 1, 1.8);
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear 0s, opacity 300ms;
+  }
+
+
+  .hide {
+    animation: hide .15s cubic-bezier(0, 1.8, 1, 1.8);
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 300ms, opacity 300ms;
+  }
